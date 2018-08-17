@@ -2,47 +2,69 @@
 #include <iostream>
 
 PriorityQueue::PriorityQueue(int capacity) {
-    heap = new Node[capacity];
     cap = capacity;
     numNodes = 0;
 }
 
-bool PriorityQueue::addTask(Task *task, int priority) {
+int PriorityQueue::addTask(Task *task, int priority) {
     int adjustedPriority = priority;
-    if(adjustedPriority < 3) adjustedPriority = 3;
+    if(adjustedPriority < MIN_USER_PRIORITY) {
+        adjustedPriority = MIN_USER_PRIORITY;
+    }
     return addTaskInternal(task, adjustedPriority);
 }
 
-bool PriorityQueue::addTaskInternal(Task *task, int priority){
+int PriorityQueue::addTaskInternal(Task *task, int priority){
     if (numNodes == cap) {
         std::cout << "Heap is full. Task not added.";
-        return false;
+        return 0;
     }
     int adjustedPriority = priority;
     if(adjustedPriority < 1) adjustedPriority = 1;
-    numNodes++;
+    ++numNodes;
+    Node tmp;
+    tmp.id = findAvailableId();
+    tmp.task = task;
+    tmp.priority = adjustedPriority;
+    if(taskStatus[tmp.id].deleted) {
+        addNode(tmp);
+    }
+    else {
+        heap[MAX_QUEUE_SIZE + 1 + tmp.id] = tmp;
+        taskStatus[tmp.id].taskPending = true;
+    }
+
+    return idCounter;
+}
+
+void PriorityQueue::addNode(Node node) {
+    taskStatus[node.id].used = true;
+    taskStatus[node.id].deleted = false;
     int i = numNodes - 1;
-    heap[i].task = task;
-    heap[i].priority = adjustedPriority;
+    heap[i] = node;
     while (i > 0 && heap[parent(i)].priority > heap[i].priority) {
        swap(i, parent(i));
        i = parent(i);
-    }                            
-
-    return true;
+    }
 }
 
 Task* PriorityQueue::getFirstTask() {
-    if(empty()) return nullptr;                
+    if(empty()){
+        return nullptr;
+    }
     return heap[0].task;
 }
 int PriorityQueue::getFirstTaskPriority() {
-    if(empty()) return 0;
+    if(empty()){
+        return 0;
+    } 
     return heap[0].priority;
 }
 Task* PriorityQueue::extractFirst() {
     if(empty()) return nullptr;
     Task *task = getFirstTask();
+    taskStatus[heap[0].id].used = false;
+    taskStatus[heap[0].id].deleted = true;
     --numNodes;
     if(numNodes > 0) {
         heap[0] = heap[numNodes];
@@ -52,38 +74,29 @@ Task* PriorityQueue::extractFirst() {
     
 }
 
-void PriorityQueue::deleteTask(int index){
+void PriorityQueue::deleteTask(int id){
     if(empty()){
         std::cout<<"already empty";
         return;
     }
-    else{
-        for(int i=0;i<numNodes;i++){
-            temp[i].task=heap[i].task;
-            temp[i].priority=heap[i].priority;
-        }
-        delete heap;
-        numNodes--;
-        heap = new Node[numNodes];
-        
-        
-        while(j < numNodes){
-            if(j==index)
-                continue;
-            heap[j].task=temp[j].task;
-            heap[j].priority=temp[j].priority;    
-            j++;
-        }
-
+    else if(heap[0].id == id) {
+        extractFirst();
     }
-    Node temp;
+    else{
+        if(taskStatus[id].used){
+            taskStatus[id].used=false;
+        }
+        else{
+            if(taskStatus[id].taskPending){
+                taskStatus[id].taskPending=false;
+            }
+            
+        }
+    }
 }
 
 void PriorityQueue::clearQueue() {
-    delete heap;
-    heap = new Node[cap];
     numNodes = 0;
-
 }
 
 void PriorityQueue::swap(int a, int b) {
