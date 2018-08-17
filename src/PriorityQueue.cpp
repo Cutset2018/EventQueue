@@ -36,7 +36,7 @@ Task* PriorityQueue::getFirstTask() {
     if(empty()) return nullptr;                
     return heap[0].task;
 }
-int PriorityQueue::getFirstPriority() {
+int PriorityQueue::getFirstTaskPriority() {
     if(empty()) return 0;
     return heap[0].priority;
 }
@@ -62,7 +62,7 @@ void PriorityQueue::deleteTask(int index){
             temp[i].task=heap[i].task;
             temp[i].priority=heap[i].priority;
         }
-        heap=NULL;
+        delete heap;
         numNodes--;
         heap = new Node[numNodes];
         
@@ -77,6 +77,13 @@ void PriorityQueue::deleteTask(int index){
 
     }
     Node temp;
+}
+
+void PriorityQueue::clearQueue() {
+    delete heap;
+    heap = new Node[cap];
+    numNodes = 0;
+
 }
 
 void PriorityQueue::swap(int a, int b) {

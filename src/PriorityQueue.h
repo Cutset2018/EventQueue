@@ -27,9 +27,12 @@ class PriorityQueue {
         bool full() {return numNodes == cap;};
         
         Task* extractFirst(); // done
-        int getFirstPriority(); // done
+        int getFirstTaskPriority(); // done
         Task* getFirstTask(); // done
         void deleteTask(int index);
+        void clearQueue(); // Done
+
+        ~PriorityQueue() {delete heap;};
 
     protected:
         /**
