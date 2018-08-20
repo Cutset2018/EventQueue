@@ -4,6 +4,10 @@
 PriorityQueue::PriorityQueue(int capacity) {
     cap = capacity;
     numNodes = 0;
+    for(int i = 0; i < cap; i++) {
+        taskStatus[i] = false;
+        freeIds[i] = i;
+    }
 }
 
 int PriorityQueue::addTask(Task *task, int priority) {
@@ -22,30 +26,17 @@ int PriorityQueue::addTaskInternal(Task *task, int priority){
     int adjustedPriority = priority;
     if(adjustedPriority < 1) adjustedPriority = 1;
     ++numNodes;
-    Node tmp;
-    tmp.id = findAvailableId();
-    tmp.task = task;
-    tmp.priority = adjustedPriority;
-    if(taskStatus[tmp.id].deleted) {
-        addNode(tmp);
-    }
-    else {
-        heap[MAX_QUEUE_SIZE + 1 + tmp.id] = tmp;
-        taskStatus[tmp.id].taskPending = true;
-    }
-
-    return idCounter;
-}
-
-void PriorityQueue::addNode(Node node) {
-    taskStatus[node.id].used = true;
-    taskStatus[node.id].deleted = false;
     int i = numNodes - 1;
-    heap[i] = node;
+    heap[i].id = findAvailableId();
+    heap[i].task = task;
+    heap[i].priority = adjustedPriority;
+    int i = numNodes - 1;
     while (i > 0 && heap[parent(i)].priority > heap[i].priority) {
        swap(i, parent(i));
        i = parent(i);
     }
+    
+    return heap[i].id;
 }
 
 Task* PriorityQueue::getFirstTask() {
@@ -63,8 +54,7 @@ int PriorityQueue::getFirstTaskPriority() {
 Task* PriorityQueue::extractFirst() {
     if(empty()) return nullptr;
     Task *task = getFirstTask();
-    taskStatus[heap[0].id].used = false;
-    taskStatus[heap[0].id].deleted = true;
+    freeIds[0] = 0;
     --numNodes;
     if(numNodes > 0) {
         heap[0] = heap[numNodes];
