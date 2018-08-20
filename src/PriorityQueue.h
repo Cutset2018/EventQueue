@@ -52,21 +52,15 @@ class PriorityQueue {
             int priority;
             int id;
         };
-        struct DeleteNode {
-            bool used = false;
-            bool deleted = true;
-            bool taskPending = false;
-        };
 
         int cap;
         int numNodes;
-        Node heap[MAX_QUEUE_SIZE * 2];
-        DeleteNode taskStatus[MAX_QUEUE_SIZE];
-        int j=0;
+        Node heap[MAX_QUEUE_SIZE];
+        bool pendingDeletion[MAX_QUEUE_SIZE];
+        int freeIds[MAX_QUEUE_SIZE];
         // Counter used to assign a unique id to each task
         int idCounter = 0;
 
-        void addNode(Node node);
         int findAvailableId();
         int parent(int i) {return (i - 1) / 2;};
         int left(int i) {return 2 * i + 1;};
