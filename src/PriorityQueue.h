@@ -34,7 +34,7 @@ class PriorityQueue {
         Task* extractFirst(); // done
         int getFirstTaskPriority(); // done
         Task* getFirstTask(); // done
-        void deleteTask(int index);
+        void deleteTask(int index);//done
         void clearQueue(); // Done
 
     protected:
@@ -61,7 +61,16 @@ class PriorityQueue {
         // Counter used to assign a unique id to each task
         int idCounter = 0;
 
-        int findAvailableId();
+        /**
+         * reserves and returns an unused id 
+         * id will remain reserved until released even if no task is using it 
+         */
+        int reserveNewId();//done
+        /**
+         * releases an id previously reserved
+         */
+        void releaseId(int id);//done
+        void popRoot();
         int parent(int i) {return (i - 1) / 2;};
         int left(int i) {return 2 * i + 1;};
         int right(int i) {return 2 * i + 2;};

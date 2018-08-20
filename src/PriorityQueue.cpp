@@ -5,8 +5,11 @@ PriorityQueue::PriorityQueue(int capacity) {
     cap = capacity;
     numNodes = 0;
     for(int i = 0; i < cap; i++) {
-        taskStatus[i] = false;
+        pendingDeletion[i] = false;
         freeIds[i] = i;
+    }
+    for(int i = cap; i < MAX_QUEUE_SIZE; i++) {
+        freeIds[i] = -1;
     }
 }
 
@@ -25,9 +28,10 @@ int PriorityQueue::addTaskInternal(Task *task, int priority){
     }
     int adjustedPriority = priority;
     if(adjustedPriority < 1) adjustedPriority = 1;
+    int id = reserveNewId();
     ++numNodes;
     int i = numNodes - 1;
-    heap[i].id = findAvailableId();
+    heap[i].id = id;
     heap[i].task = task;
     heap[i].priority = adjustedPriority;
     int i = numNodes - 1;
@@ -51,18 +55,29 @@ int PriorityQueue::getFirstTaskPriority() {
     } 
     return heap[0].priority;
 }
+
+
 Task* PriorityQueue::extractFirst() {
     if(empty()) return nullptr;
     Task *task = getFirstTask();
-    freeIds[0] = 0;
+    do {
+        popRoot();
+    }
+    while(pendingDeletion[heap[0].id]);
+
+    return task;
+}
+
+void PriorityQueue::popRoot() {
+    pendingDeletion[heap[0].id] = false;
+    releaseId(heap[0].id);
     --numNodes;
-    if(numNodes > 0) {
+    if(!empty()) {
         heap[0] = heap[numNodes];
         heapify(0);
     }
-    return task;
-    
 }
+
 
 void PriorityQueue::deleteTask(int id){
     if(empty()){
@@ -70,19 +85,21 @@ void PriorityQueue::deleteTask(int id){
         return;
     }
     else if(heap[0].id == id) {
-        extractFirst();
+        popRoot();
     }
     else{
-        if(taskStatus[id].used){
-            taskStatus[id].used=false;
-        }
-        else{
-            if(taskStatus[id].taskPending){
-                taskStatus[id].taskPending=false;
-            }
-            
-        }
+        pendingDeletion[id]=true;
     }
+}
+
+int PriorityQueue::reserveNewId(){
+    int freeId = freeIds[cap - 1 - numNodes];
+    freeIds[cap - 1 - numNodes] = 0;
+    return freeId;
+}
+
+void PriorityQueue::releaseId(int id){
+    freeIds[cap-numNodes] = id;
 }
 
 void PriorityQueue::clearQueue() {
@@ -95,13 +112,15 @@ void PriorityQueue::swap(int a, int b) {
     heap[b] = tmp;    
 }
 
+
+
 void PriorityQueue::heapify(int root){  
     int l = left(root), r = right(root), low = root;
     if (l < numNodes && heap[l].priority < heap[low].priority)
         low = l;
     if (r < numNodes && heap[r].priority < heap[low].priority)
         low = r;
-    if (low != root) {
+    if (low != root) { 
         swap(root, low);
         heapify(low);
     }
