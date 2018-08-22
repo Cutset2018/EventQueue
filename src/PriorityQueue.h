@@ -33,12 +33,19 @@ class PriorityQueue {
          */
         int numTasksPendingDeletion() {return numPendingDeletion;};
         
+        void printHeap();
+            
         
+
         Task* extractFirst(); // done
         int getFirstTaskPriority(); // done
         Task* getFirstTask(); // done
-        void deleteTask(int index);//done
+        void deleteTask(int id);//done
         void clearQueue(); // Done
+        /**
+         * goes ahead and deletes all the tasks pending deletion
+        */
+        void purgeDeletedTasks();//done
 
     protected:
         /**
@@ -79,6 +86,7 @@ class PriorityQueue {
         int right(int i) {return 2 * i + 2;};
         void swap(int a, int b); // done
         void heapify(int root);
+        void printFromNode(int index, int indent);
 
 };
 

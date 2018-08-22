@@ -6,7 +6,7 @@ PriorityQueue::PriorityQueue(int capacity) {
     numNodes = 0;
     for(int i = 0; i < cap; i++) {
         pendingDeletion[i] = false;
-        freeIds[i] = i;
+        freeIds[i] = cap - i - 1;
     }
     for(int i = cap; i < MAX_QUEUE_SIZE; i++) {
         freeIds[i] = -1;
@@ -34,7 +34,6 @@ int PriorityQueue::addTaskInternal(Task *task, int priority){
     heap[i].id = id;
     heap[i].task = task;
     heap[i].priority = adjustedPriority;
-    int i = numNodes - 1;
     while (i > 0 && heap[parent(i)].priority > heap[i].priority) {
        swap(i, parent(i));
        i = parent(i);
@@ -59,12 +58,12 @@ int PriorityQueue::getFirstTaskPriority() {
 
 Task* PriorityQueue::extractFirst() {
     if(empty()) return nullptr;
+    Task *task = getFirstTask();
+    popRoot();
     while(pendingDeletion[heap[0].id]) {
         popRoot();
         --numPendingDeletion;
     }
-    Task *task = getFirstTask();
-    popRoot();
 
     return task;
 }
@@ -81,12 +80,12 @@ void PriorityQueue::popRoot() {
 }
 
 void PriorityQueue::deleteTask(int id){
-    if(empty()){
+    if(empty() || id < 0 || id > cap - 1){
         std::cout<<"already empty";
         return;
     }
     else if(heap[0].id == id) {
-        popRoot();
+        extractFirst();
     }
     else {
         pendingDeletion[id]=true;
@@ -121,6 +120,44 @@ void PriorityQueue::releaseId(int id){
 
 void PriorityQueue::clearQueue() {
     numNodes = 0;
+    numPendingDeletion = 0;
+    for(int i = 0; i < cap; i++) {
+        pendingDeletion[i] = false;
+        freeIds[i] = cap - i - 1;
+    }
+    for(int i = cap; i < MAX_QUEUE_SIZE; i++) {
+        freeIds[i] = -1;
+    }
+}
+void PriorityQueue::printHeap(){
+    std::cout << "--------------------------------------------------\n";
+    std::cout << "Size: " << size() << ", Capacity: " << cap << "\n\n";
+    printFromNode(0, 0);
+    std::cout << "--------------------------------------------------\n";
+
+}
+void PriorityQueue::printFromNode(int index, int indent = 0) {
+    if(index < numNodes) {
+        if(indent > 0) {
+            for(int i = 0; i < indent; i++) {
+                if(i%2==0){
+                    std::cout << '|';
+                }
+                std::cout << '-';
+            }
+        }
+        std::cout << heap[index].id << " (" << heap[index].priority << ")";
+        if(pendingDeletion[heap[index].id]) {
+            std::cout << " [DELETED]";
+        }
+        std::cout << "\n";
+        if(left(index) < numNodes) {
+            printFromNode(left(index), indent + 2);
+        }
+        if(right(index) < numNodes) {
+            printFromNode(right(index), indent + 2);
+        }
+    }
 }
 
 void PriorityQueue::swap(int a, int b) {
