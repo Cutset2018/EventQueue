@@ -28,7 +28,10 @@ class PriorityQueue {
          * Returns whether the queue is filled to capacity.
          */
         bool full() {return numNodes == cap;};
-
+        /**
+         * Returns the number of tasks in the queue that are pending deletion.
+         */
+        int numTasksPendingDeletion() {return numPendingDeletion;};
         
         
         Task* extractFirst(); // done
@@ -59,7 +62,7 @@ class PriorityQueue {
         bool pendingDeletion[MAX_QUEUE_SIZE];
         int freeIds[MAX_QUEUE_SIZE];
         // Counter used to assign a unique id to each task
-        int idCounter = 0;
+        int numPendingDeletion = 0;
 
         /**
          * reserves and returns an unused id 
@@ -70,7 +73,7 @@ class PriorityQueue {
          * releases an id previously reserved
          */
         void releaseId(int id);//done
-        void popRoot();
+        void popRoot(); // done
         int parent(int i) {return (i - 1) / 2;};
         int left(int i) {return 2 * i + 1;};
         int right(int i) {return 2 * i + 2;};

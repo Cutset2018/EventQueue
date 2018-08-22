@@ -59,16 +59,18 @@ int PriorityQueue::getFirstTaskPriority() {
 
 Task* PriorityQueue::extractFirst() {
     if(empty()) return nullptr;
-    Task *task = getFirstTask();
-    do {
+    while(pendingDeletion[heap[0].id]) {
         popRoot();
+        --numPendingDeletion;
     }
-    while(pendingDeletion[heap[0].id]);
+    Task *task = getFirstTask();
+    popRoot();
 
     return task;
 }
 
 void PriorityQueue::popRoot() {
+    if(empty()) return;
     pendingDeletion[heap[0].id] = false;
     releaseId(heap[0].id);
     --numNodes;
@@ -87,8 +89,9 @@ void PriorityQueue::deleteTask(int id){
     else if(heap[0].id == id) {
         popRoot();
     }
-    else{
+    else {
         pendingDeletion[id]=true;
+        ++numPendingDeletion;
     }
 }
 
