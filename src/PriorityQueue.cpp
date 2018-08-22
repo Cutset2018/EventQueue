@@ -114,15 +114,21 @@ void PriorityQueue::swap(int a, int b) {
 
 
 
-void PriorityQueue::heapify(int root){  
-    int l = left(root), r = right(root), low = root;
-    if (l < numNodes && heap[l].priority < heap[low].priority)
-        low = l;
-    if (r < numNodes && heap[r].priority < heap[low].priority)
-        low = r;
-    if (low != root) { 
-        swap(root, low);
-        heapify(low);
+void PriorityQueue::heapify(int root) {
+    int l, r, low;
+    while(true) {
+        l = left(root), r = right(root), low = root;
+        if (l < numNodes && heap[l].priority < heap[low].priority) {
+            low = l;
+        }
+        if (r < numNodes && heap[r].priority < heap[low].priority) {
+            low = r;
+        }
+        if (low != root) {
+            swap(root, low);
+            root = low;
+        }
+        else return;
     }
 }
 /*basically, when the user adds a task, it is converted to a node, which stores the function (task)
