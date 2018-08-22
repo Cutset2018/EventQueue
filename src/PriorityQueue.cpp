@@ -80,7 +80,6 @@ void PriorityQueue::popRoot() {
     }
 }
 
-
 void PriorityQueue::deleteTask(int id){
     if(empty()){
         std::cout<<"already empty";
@@ -92,6 +91,21 @@ void PriorityQueue::deleteTask(int id){
     else {
         pendingDeletion[id]=true;
         ++numPendingDeletion;
+    }
+}
+
+void PriorityQueue::purgeDeletedTasks() {
+    for(int i = 0; i < numNodes && numPendingDeletion > 0; i++) {
+        if(pendingDeletion[heap[i].id]) {
+            int j = i;
+            while(j > 0) {
+                swap(j, parent(j));
+                j = parent(j);
+            }
+            popRoot();
+            --numPendingDeletion;
+            --i;
+        }
     }
 }
 
@@ -134,11 +148,3 @@ void PriorityQueue::heapify(int root) {
         else return;
     }
 }
-/*basically, when the user adds a task, it is converted to a node, which stores the function (task)
-and its priority. priority (accessed via heap[index].priority) is used as the sorting criteria
-of the heap (basically the key value from the tutorials). heap[index].function is only used
-when the task itself is needed (i.e. when it is extracted or run)*/
-
-// also, i split add task into add task and add task internal
-// since Boyang wanted us to reserve the highest priorities for the system, i made addTask increase 
-// priority 1 or 2 to 3. addTaskInternal is protected and allows priority 1 and 2.
