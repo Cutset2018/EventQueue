@@ -11,6 +11,7 @@ class EventQueue : public PriorityQueue {
         void scheduleSleep(double duration, double delay = 0);
         void scheduleSleepPeriodically(double duration, double period);
         void start();
+        
     protected:
 
     private:
