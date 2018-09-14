@@ -76,6 +76,25 @@ int main() {
     // pQueue.addTask(task, 8);
     // pQueue.addTask(task, 9);
     // pQueue.printHeap();
+    eQueue.scheduleTask(task,3);
+    eQueue.scheduleSleep(2);
+    eQueue.scheduleTask(task,3);
+    eQueue.scheduleSleep(2);
+    eQueue.scheduleTask(task,3);
+    eQueue.scheduleSleep(2);
+    eQueue.scheduleTask(task,3);
+    eQueue.scheduleSleep(2);
+    eQueue.scheduleTask(task,3);
+    eQueue.scheduleSleep(2);
+    eQueue.scheduleTask(task,3);
+    eQueue.scheduleSleep(2);
+    eQueue.scheduleTask(task,3);
+    eQueue.scheduleSleep(2);
+    eQueue.scheduleTask(task,3);
+    eQueue.scheduleSleep(2);
+    eQueue.scheduleTask(task,3);
+    
+
 
 
 

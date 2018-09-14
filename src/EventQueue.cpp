@@ -1,29 +1,37 @@
 #include "EventQueue.h"
+
 #include <thread>
 #include <chrono>
+using namespace std::this_thread;     // sleep_for, sleep_until
+using std::chrono::system_clock;
+using namespace std::chrono;
 
-int EventQueue::scheduleSleep(double duration, double delay = 0){
-    std::this_thread::sleep_for(std::chrono::milliseconds(delay*1000));
+// void EventQueue::scheduleSleep(int duration, int delay){
+//     sleep_for(seconds(delay)); 
+//     sleep_for(seconds(duration));
+// }
+// void EventQueue::scheduleSleepPeriodically(int duration, int period){
+//     while(true){
+//         sleep_for(seconds(duration));
+//         sleep_for(seconds(period));
+//         printHeap();
+//     }
+// }
+// void EventQueue::scheduleTask(Task *task, int priority, int delay){
+//     sleep_for(seconds(delay));
+//     addTask(task,priority);
+//     printHeap();
+// }
+// void EventQueue::scheduleTaskPeriodically(Task *task, int priority, int period){
+//     while(true){
+//         addTask(task,priority);
+//         sleep_for(seconds(period));
+//         printHeap();
+//     }
     
-    std::this_thread::sleep_for(std::chrono::milliseconds(duration*1000));
-}
-int EventQueue::scheduleSleepPeriodically(double duration, double period){
-    while(true){
-        std::this_thread::sleep_for(std::chrono::milliseconds(duration*1000));
-        std::this_thread::sleep_for(std::chrono::milliseconds(period*1000));
-    }
-}
-int EventQueue::scheduleTask(Task *task, int priority, double delay = 0){
-    std::this_thread::sleep_for(std::chrono::milliseconds(delay*1000));
-    addTask(*task,priority);
-}
-int EventQueue::scheduleTaskPeriodically(Task *task, int priority, double period){
-    while(true){
-        addTask(*task,priority);
-        std::this_thread::sleep_for(std::chrono::milliseconds(period*1000));
-    }
-    
-}
+// }
+
+
 
 
 
